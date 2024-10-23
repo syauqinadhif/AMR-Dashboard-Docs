@@ -1,0 +1,28 @@
+---
+title: Agent Selection Panel
+description: Komponen ini digunakan untuk menampilkan daftar agen yang tersedia dan memungkinkan pengguna untuk memilih agen yang ingin dikendalikan.
+---
+
+## Fitur Utama
+1. **Menampilkan Daftar Agen**: Menampilkan daftar semua agen yang tersedia dari store.
+2. **Memilih Agen**: Ketika sebuah agen diklik, event `agent-click` akan dipicu dengan nama agen sebagai argumen.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Pinia** untuk state management (menggunakan `useMainStore` untuk mendapatkan daftar agen).
+- **Event Handling**: Menggunakan `defineEmits` untuk memicu event ketika agen diklik.
+
+## Potongan Kode `AgentSelectionPanel.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { useMainStore } from '@/stores/main'
+import AgentListItem from './AgentListItem.vue';
+
+// Menerbitkan event agent-click ketika agen diklik
+defineEmits(['agent-click'])
+
+const mainStore = useMainStore() // Mengambil store utama yang menyimpan data agen
+</script>

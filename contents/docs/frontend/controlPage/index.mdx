@@ -1,0 +1,112 @@
+---
+title: Agent Control Map
+description: Komponen ini menyediakan antarmuka untuk mengontrol agen di peta menggunakan Leaflet. Pengguna dapat memilih agen, mengontrol agen yang dipilih, serta berinteraksi dengan peta melalui context menu.
+---
+
+## Fitur Utama
+1. **Peta dengan Leaflet**: Peta diinisialisasi menggunakan Leaflet untuk menampilkan lokasi agen dan SLAM map.
+2. **Daftar Agen**: Pengguna dapat memilih agen dari daftar yang ditampilkan di sebelah kanan layar.
+3. **Kontrol Agen**: Setelah memilih agen, pengguna dapat mengontrolnya melalui panel kontrol.
+4. **Context Menu**: Menu konteks (context menu) muncul di peta saat klik kanan untuk menampilkan opsi terkait posisi tertentu.
+5. **Dinamis**: Kelas CSS ditambahkan dan dihapus dari elemen root aplikasi saat komponen dipasang dan dilepas.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Leaflet.js** untuk menampilkan dan mengelola peta.
+- **Pinia** (via `useMainStore`) untuk state management.
+- **Tailwind CSS** untuk styling.
+
+## Komponen yang Diimpor
+
+### 1. **`UserLayout.vue`**
+Komponen layout utama yang digunakan untuk membungkus halaman. `UserLayout` memastikan tampilan konsisten di seluruh halaman aplikasi dengan struktur tata letak yang umum. Ini mengelola elemen header, footer, dan area konten utama untuk menjaga keseragaman di seluruh aplikasi.
+
+### 2. **`AgentList.vue`**
+Komponen ini menampilkan daftar agen yang tersedia. Pengguna dapat memilih agen dari daftar ini untuk kemudian dikontrol. Setiap item agen dalam daftar dapat diklik, dan komponen ini memicu event ketika agen dipilih. 
+
+- **Fitur Utama**:
+  - Menampilkan daftar agen dengan informasi dasar.
+  - Memungkinkan pemilihan agen yang ingin dikontrol.
+
+### 3. **`AgentControl.vue`**
+Komponen ini muncul setelah agen dipilih dari `AgentList`. Komponen ini menyediakan antarmuka untuk mengontrol agen yang dipilih. Kontrol dapat mencakup arah gerakan agen, kecepatan, atau tugas lain yang terkait dengan agen.
+
+- **Fitur Utama**:
+  - Menampilkan informasi dan kontrol terkait agen yang dipilih.
+  - Memberikan opsi untuk mengubah atau mengatur pergerakan dan tugas agen.
+
+### 4. **`MapButtons.vue`**
+Ini adalah komponen untuk menampilkan tombol-tombol kontrol tambahan yang terkait dengan peta. Tombol-tombol ini mungkin mencakup fungsi seperti zoom in, zoom out, reset view, atau fitur tambahan terkait navigasi pada peta.
+
+- **Fitur Utama**:
+  - Menyediakan kontrol tambahan untuk interaksi pengguna dengan peta.
+  - Memungkinkan manipulasi peta dengan mudah, seperti zoom atau navigasi.
+
+### 5. **`MapContextMenu.vue`**
+Menu konteks yang muncul saat pengguna melakukan klik kanan pada peta. Menu ini menawarkan opsi untuk menavigasi atau menyalin koordinat berdasarkan lokasi yang dipilih di peta.
+
+- **Fitur Utama**:
+  - Menampilkan opsi yang relevan pada posisi yang diklik pengguna di peta.
+  - Memungkinkan pengguna untuk menyalin koordinat atau menavigasi ke lokasi yang dipilih.
+
+## Potongan Kode `AgentControlMap.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { ref, watch, onMounted, onBeforeMount, onBeforeUnmount } from 'vue'
+import { useMainStore } from '@/stores/main';
+import leafletMap from '@/services/leafletMap';
+import CoordConversion from '@/utils/CoordConversion';
+import UserLayout from '@/components/UserLayout.vue'
+import AgentList from '@/components/pages/Control/AgentList.vue'
+import AgentControl from '@/components/pages/Control/AgentControl.vue'
+import MapButtons from '@/components/pages/Control/MapButtons.vue'
+import MapContextMenu from '@/components/pages/Control/MapContextMenu.vue'
+
+// Inisialisasi main store untuk akses data agen dan peta
+const mainStore = useMainStore();
+
+// Variabel untuk agen yang dipilih
+const selectedAgent = ref(null)
+
+// Tambahkan kelas khusus ke elemen root saat komponen dipasang
+onBeforeMount(() => {
+  window.document.getElementById('app')?.classList.add('app-screen')
+});
+
+// Hapus kelas dari elemen root saat komponen dilepas
+onBeforeUnmount(() => {
+  window.document.getElementById('app')?.classList.remove('app-screen')
+});
+
+// Inisialisasi peta menggunakan Leaflet saat komponen dipasang
+onMounted(() => {
+  leafletMap.initializeMap();
+
+  // Pantau perubahan daftar agen dan update peta
+  watch(() => mainStore.agents, (agents) => {
+    leafletMap.setAgents(agents);
+  }, { immediate: true });
+
+  // Pantau perubahan peta SLAM dan update jika ada perubahan
+  watch(() => mainStore.slamMap, (slamMap) => {
+    if (slamMap) leafletMap.setSlamMap(slamMap);
+  }, { immediate: true });
+
+  // Tambahkan event listener untuk context menu (klik kanan pada peta)
+  leafletMap.map?.on('contextmenu', (data) => {
+    mainStore.controlMapContextMenu = {
+      isVisible: true,
+      anchorPosition: [data.containerPoint.x, data.containerPoint.y],
+      coordinate: CoordConversion.leafletToSlam([data.latlng.lat, data.latlng.lng])
+    }
+  });
+
+  // Sembunyikan context menu saat klik biasa pada peta
+  leafletMap.map?.on('click', () => {
+    mainStore.controlMapContextMenu.isVisible = false;
+  });
+});
+</script>

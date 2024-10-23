@@ -1,0 +1,42 @@
+---
+title: Map Context Menu
+description: Komponen ini menampilkan menu konteks (context menu) yang memungkinkan pengguna untuk menavigasi atau menyalin koordinat dari peta. Menu ini dapat muncul di posisi mana pun di layar berdasarkan input dari pengguna.
+---
+
+## Fitur Utama
+1. **Navigasi**: Pengguna dapat memilih "Navigate here" untuk memicu aksi navigasi ke posisi yang dipilih.
+2. **Salin Koordinat**: Pengguna dapat menyalin koordinat saat ini ke clipboard dengan memilih "Copy coordinate".
+3. **Posisi Dinamis**: Komponen context menu diposisikan secara dinamis berdasarkan klik pengguna pada peta.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Pinia** (state management) untuk mendapatkan data context menu dari store utama.
+- **Clipboard API** untuk menyalin koordinat ke clipboard.
+
+## Potongan Kode `MapContextMenu.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useMainStore } from '@/stores/main'; // Mengakses store utama
+
+const mainStore = useMainStore();
+
+// Mengambil data context menu dari store
+const contextMenuParam = computed(() => mainStore.controlMapContextMenu);
+
+// Fungsi untuk navigasi
+function navigate() {
+  console.log('Navigate here');
+  mainStore.controlMapContextMenu.isVisible = false; // Menyembunyikan context menu setelah navigasi
+}
+
+// Fungsi untuk menyalin koordinat
+function copyCoord() {
+  const [x, y] = contextMenuParam.value.coordinate; // Mendapatkan koordinat
+  navigator.clipboard.writeText(`${x.toFixed(3)}, ${y.toFixed(3)}`); // Menyalin ke clipboard
+  mainStore.controlMapContextMenu.isVisible = false; // Menyembunyikan context menu
+}
+</script>

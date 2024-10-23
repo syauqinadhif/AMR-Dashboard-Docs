@@ -1,0 +1,102 @@
+---
+title: Control Pad Component
+description: Komponen ini digunakan untuk mengontrol arah gerakan dengan menggunakan tombol virtual (W, A, S, D) dan keyboard. Setiap arah yang diklik atau ditekan akan memancarkan event `direction` yang mengirimkan arah pergerakan.
+---
+
+## Fitur Utama
+1. **Kontrol Arah**: Pengguna dapat mengontrol arah pergerakan melalui tombol W, A, S, D, baik dengan mengklik atau menggunakan keyboard.
+2. **Event Emission**: Setiap kali tombol arah ditekan atau diklik, event `direction` akan dipicu, mengirimkan arah yang dipilih ke komponen parent.
+3. **Aktifkan Interval**: Arah yang ditekan atau diklik akan terus memicu event `direction` secara berkala hingga tombol dilepas.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **SVG** untuk membuat tombol visual interaktif.
+- **Keyboard Event Handling**: Listener untuk event `keydown` dan `keyup` untuk mengontrol pergerakan arah.
+
+## Potongan Kode `ControlPad.vue`
+
+### Script Section
+
+```typescript
+<script setup>
+import { reactive, onMounted, onUnmounted } from 'vue';
+
+// Menerbitkan event direction
+const emit = defineEmits(['direction']);
+
+// Mengelola status tombol W, A, S, D dan intervalnya
+const directions = reactive({
+  forward: {
+    key: 'w',
+    isActive: false,
+    intervalId: null
+  },
+  backward: {
+    key: 's',
+    isActive: false,
+    intervalId: null
+  },
+  left: {
+    key: 'a',
+    isActive: false,
+    intervalId: null
+  },
+  right: {
+    key: 'd',
+    isActive: false,
+    intervalId: null
+  }
+});
+
+// Memancarkan event dengan arah yang diberikan
+function emitDirection(direction) {
+  emit('direction', direction);
+}
+
+// Memulai interval pemancaran event arah secara berkala (100ms)
+function startInterval(direction) {
+  if (directions[direction].intervalId) return;
+
+  const callbackFn = () => emitDirection(direction);
+  callbackFn();
+  directions[direction].intervalId = setInterval(callbackFn, 100);
+}
+
+// Menghentikan interval pemancaran event
+function stopInterval(direction) {
+  clearInterval(directions[direction].intervalId);
+  directions[direction].intervalId = null;
+}
+
+// Handler untuk event keydown
+function controlPadOnKeydown(ev) {
+  for (const direction in directions) {
+    if (ev.key === directions[direction].key) {
+      startInterval(direction);
+      directions[direction].isActive = true;
+    }
+  }
+}
+
+// Handler untuk event keyup
+function controlPadOnKeyUp(ev) {
+  for (const direction in directions) {
+    if (ev.key === directions[direction].key) {
+      stopInterval(direction);
+      directions[direction].isActive = false;
+    }
+  }
+}
+
+// Menambahkan listener keydown dan keyup saat komponen dipasang
+onMounted(() => {
+  document.addEventListener('keydown', controlPadOnKeydown);
+  document.addEventListener('keyup', controlPadOnKeyUp);
+});
+
+// Menghapus listener saat komponen dilepas
+onUnmounted(() => {
+  document.removeEventListener('keydown', controlPadOnKeydown);
+  document.removeEventListener('keyup', controlPadOnKeyUp);
+});
+</script>

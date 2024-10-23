@@ -1,0 +1,27 @@
+---
+title: AgentsCommService.ts Overview
+description: Penjelasan mengenai file AgentsCommService yang bertanggung jawab untuk komunikasi antara server dan agen menggunakan TCP.
+---
+
+## Overview `AgentsCommService.ts`
+
+File `AgentsCommService.ts` adalah bagian penting dari sistem komunikasi agen, yang memungkinkan server untuk berkomunikasi dengan agen melalui beberapa port TCP. File ini mengelola koneksi TCP dan menangani pengiriman serta penerimaan data status dan perintah kontrol agen.
+
+### Fitur Utama
+1. **Koneksi TCP ke Agen**: `AgentsCommService` menggunakan beberapa klien TCP untuk berkomunikasi dengan agen melalui port yang berbeda, seperti status data, kontrol, dan navigasi.
+2. **Event-driven**: Komunikasi dijalankan berdasarkan event, dengan penggunaan `EventEmitter` untuk mendistribusikan data yang diterima dan perintah yang dikirim.
+3. **Port yang Digunakan**:
+   - **STATUS_DATA_PORT**: Digunakan untuk menerima data status dari agen.
+   - **CONTROL_CMD_PORT**: Digunakan untuk mengirim perintah kontrol agen.
+   - **NAVIGATION_CMD_PORT**: Digunakan untuk mengirim perintah navigasi agen.
+
+### Fungsi Utama
+
+#### 1. **`connectToAgent(agent: AgentConfiguration)`**
+```typescript
+public connectToAgent(agent: AgentConfiguration) {
+  if (agent.ipAddress) {
+    console.log(`AgentsCommService: Starting TCP clients for ${agent.name} (${agent.ipAddress})`);
+    this.startCommClient(agent.id, agent.ipAddress);
+  }
+}

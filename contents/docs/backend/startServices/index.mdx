@@ -1,0 +1,67 @@
+---
+title: Server-Side Agent Control and Map Management
+description: Implementasi server untuk mengontrol agen, memanipulasi data peta, dan mengelola agen menggunakan Socket.IO, Database, dan layanan internal lainnya.
+---
+
+## Fitur Utama
+1. **Agen dan Peta**: Sistem ini berinteraksi dengan agen dan peta menggunakan layanan seperti `MapProviderService`, `AgentsCommService`, dan `DatabaseService`.
+2. **Kontrol Agen**: Server mengontrol agen melalui komunikasi real-time menggunakan Socket.IO. Komando arah dan posisi dikirimkan ke agen yang terhubung.
+3. **WebSocket Communication**: Server menggunakan Socket.IO untuk berinteraksi dengan klien secara real-time. Event seperti `agent:getAll`, `agent:add`, dan `agentCmd:direction` diatur untuk memungkinkan klien mengelola dan mengontrol agen.
+4. **Dummy Agents**: Untuk pengujian dan pengembangan, terdapat opsi untuk menggunakan agen tiruan (`DummyAgentsGenerator`), yang dapat dipilih melalui konfigurasi `USE_DUMMY_AGENTS`.
+5. **Context Menu dan Control Komando**: Server mendengarkan event untuk mengontrol arah dan posisi agen, serta berkomunikasi dengan peta SLAM untuk mendapatkan informasi peta.
+
+## Teknologi yang Digunakan
+- **Socket.IO**: Untuk komunikasi real-time antara klien dan server.
+- **Leaflet.js**: Untuk manajemen peta (SLAM Map).
+- **Pinia** (State Management): Menyimpan informasi agen dan peta.
+- **DatabaseService**: Layanan modifikasi database yang bertanggung jawab untuk mengambil dan memperbarui agen.
+- **MapProviderService**: Layanan untuk menyediakan dan memperbarui data peta.
+- **AgentsCommService**: Layanan untuk berkomunikasi dengan agen, termasuk mengirimkan komando kontrol dan arah.
+
+## Komponen yang Diimpor
+
+### 1. **`WebSocketService`**
+Layanan yang menginisialisasi dan mengelola koneksi WebSocket menggunakan **Socket.IO**. Layanan ini bertanggung jawab untuk mendengarkan dan menangani event dari klien dan juga mengirimkan pembaruan status agen ke klien.
+
+### 2. **`MapProviderService`**
+Layanan ini menyediakan data peta (seperti SLAM map) ke klien. Layanan ini memungkinkan pengguna untuk mengambil informasi peta dan memperbaruinya secara real-time.
+
+- **Fitur Utama**:
+  - Menyediakan data peta terbaru ke klien.
+  - Memperbarui peta SLAM dengan data terbaru dari server.
+
+### 3. **`AgentsCommService`**
+Layanan ini digunakan untuk mengirimkan dan menerima informasi dari agen. Ini termasuk mengirim komando seperti arah gerak (misalnya, maju, mundur, kiri, kanan) dan mengatur posisi target untuk agen.
+
+- **Fitur Utama**:
+  - Berkomunikasi dengan agen dan menerima data kondisi agen.
+  - Mengirimkan komando kontrol ke agen.
+  - Mendukung agen tiruan (dummy agents) selama pengembangan.
+
+### 4. **`DatabaseService`**
+Layanan yang bertanggung jawab untuk mengakses database. Ini digunakan untuk mengambil data agen yang up-to-date dari database serta menambahkan agen baru ke dalam sistem.
+
+- **Fitur Utama**:
+  - Mengambil agen dari database.
+  - Menambahkan agen baru ke dalam database.
+  - Memperbarui data agen yang ada dengan informasi terbaru dari database.
+
+### 5. **`DummyAgentsGenerator`**
+Generator agen tiruan yang digunakan untuk tujuan pengujian. Saat opsi `USE_DUMMY_AGENTS` diaktifkan, sistem akan menggunakan agen tiruan ini alih-alih agen asli.
+
+- **Fitur Utama**:
+  - Membuat agen tiruan untuk pengembangan dan pengujian.
+  - Mengirimkan pembaruan kondisi agen secara berkala ke sistem.
+
+## Potongan Kode Utama
+
+### Inisialisasi Server dan Layanan
+
+```typescript
+export default function startServices(httpServer: Server) {
+  const webSocketService = new WebSocketService(httpServer);
+  const mapProviderService = new MapProviderService(MAP_NAME);
+  const agentsCommService = new AgentsCommService();
+  const databaseService = new DatabaseService(); 
+  const dummyAgentGen = new DummyAgentsGenerator();
+}

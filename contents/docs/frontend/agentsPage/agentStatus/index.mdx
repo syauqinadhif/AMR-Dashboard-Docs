@@ -1,0 +1,42 @@
+---
+title: Agent Status Indicator
+description: Komponen ini digunakan untuk menampilkan status agen (Offline, Idle, atau Active) dengan indikator warna dan teks.
+---
+
+## Fitur Utama
+1. **Menampilkan Status Agen**: Menampilkan status agen dengan teks yang sesuai (Offline, Idle, Active).
+2. **Indikator Warna**: Status agen juga disertai dengan indikator warna yang menunjukkan statusnya secara visual (merah untuk Offline, kuning untuk Idle, hijau untuk Active).
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Tailwind CSS** untuk styling warna dan layout.
+
+## Potongan Kode `AgentStatusIndicator.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+defineProps({
+  status: {
+    type: String,
+    required: true
+  }
+})
+
+// Menerjemahkan status agen ke dalam teks dan warna
+const statusObject = {
+  offline: {
+    text: 'Offline',
+    color: 'text-red-500'
+  },
+  idle: {
+    text: 'Idle',
+    color: 'text-yellow-500'
+  },
+  active: {
+    text: 'Active',
+    color: 'text-green-500'
+  }
+}
+</script>

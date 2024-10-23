@@ -1,0 +1,94 @@
+---
+title: Agents Page
+description: Halaman Agents adalah bagian dari aplikasi Dashboard AGV yang digunakan untuk menampilkan, memfilter, dan menambah agen baru. Halaman ini terintegrasi dengan store Vuex dan menggunakan socket.io untuk sinkronisasi data secara real-time.
+
+---
+#### Fitur Utama:
+1. **Pencarian Agen**: Pengguna dapat mencari agen berdasarkan nama menggunakan `AgentSearchFilter`.
+2. **Filter Status Agen**: Pengguna dapat memfilter agen berdasarkan status mereka, seperti `active`, `idle`, atau `offline`.
+3. **Penambahan Agen Baru**: Pengguna dapat menambahkan agen baru melalui dialog form yang terintegrasi dengan server melalui socket.io.
+
+#### Teknologi yang Digunakan:
+- **Vue.js 3** (Composition API)
+- **PrimeVue** untuk komponen UI seperti tombol, input teks, dan dialog.
+- **Vuex** untuk manajemen state global.
+- **Socket.io** untuk komunikasi real-time antara client dan server.
+
+#### Komponen yang Digunakan:
+- `UserLayout.vue`: Komponen layout utama.
+- `AgentSearchFilter.vue`: Komponen untuk pencarian agen berdasarkan nama.
+- `AgentCard.vue`: Komponen untuk menampilkan detail agen dalam bentuk kartu.
+
+#### Potongan Kode `AgentsView.vue`
+
+```typescript
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useMainStore } from "@/stores/main";
+import Button from "primevue/button";
+import SelectButton from "primevue/selectbutton";
+import Dialog from "primevue/dialog";
+import InputText from "primevue/inputtext";
+import UserLayout from "@/components/UserLayout.vue";
+import AgentSearchFilter from "@/components/AgentSearchFilter.vue";
+import AgentCard from "@/components/pages/Agents/AgentCard.vue";
+import { Agent } from '@/types/agent';
+
+const mainStore = useMainStore();
+const { socket } = mainStore;
+
+const agentName = ref("");
+const agentIpAddress = ref("");
+const agentHsmKey = ref("");
+const agentRegisterPlant = ref("");
+
+const successMessage = ref("");
+const errorMessage = ref("");
+
+const filterOptions = [
+  { label: "Active", value: "active" },
+  { label: "Idle", value: "idle" },
+  { label: "Offline", value: "offline" },
+];
+
+const searchValue = ref("");
+const selectedTags = ref<string[]>([]);
+const displayAddAgentDialog = ref(false);
+
+const filteredAgents = computed(() => {
+  return mainStore.agents.filter((agent) => {
+    const matchesSearch = agent.name.toLowerCase().includes(searchValue.value.toLowerCase());
+    const matchesTags = selectedTags.value.length === 0 || selectedTags.value.includes(agent.status ?? '');
+    return matchesSearch && matchesTags;
+  });
+});
+
+const toggleAddAgentDialog = () => {
+  displayAddAgentDialog.value = !displayAddAgentDialog.value;
+};
+
+const submitAgent = () => {
+  const newAgent = {
+    name: agentName.value,
+    ipAddress: agentIpAddress.value,
+    hsmKey: agentHsmKey.value,
+    siteId: agentRegisterPlant.value,
+  };
+
+  if (socket !== null) {
+    socket.emit('agent:add', newAgent, (response: { success: boolean, message: string }) => {
+      if (response.success) {
+        toggleAddAgentDialog();
+        socket.emit('agent:getAll', (agentsData: Agent[]) => {
+          mainStore.agents = agentsData;
+        });
+      } else {
+        errorMessage.value = response.message;
+      }
+    });
+  } else {
+    errorMessage.value = "Socket connection is not available";
+    console.error("Socket is null, unable to submit agent");
+  }
+};
+</script>

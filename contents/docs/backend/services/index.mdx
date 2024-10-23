@@ -1,0 +1,53 @@
+---
+title: Services Folder Overview
+description: Penjelasan mengenai file dan fungsionalitas yang ada dalam folder `services` pada aplikasi backend.
+---
+
+## Overview Folder `services`
+
+Folder `services` berisi beberapa service penting yang digunakan untuk mengelola komunikasi antar agen, peta, database, dan WebSocket dalam aplikasi. Berikut adalah penjelasan mengenai setiap file dalam folder `services`:
+
+### 1. **`AgentsCommService.ts`**
+- **Deskripsi**: File ini bertanggung jawab untuk menangani komunikasi antara server dan agen. Service ini mengelola data yang diterima dari agen serta mengirimkan instruksi ke agen.
+- **Penggunaan Utama**:
+  - Menghubungkan agen ke server.
+  - Mengirim perintah kontrol ke agen.
+  - Mendapatkan data status agen secara real-time.
+
+### 2. **`AutoReconnectTCPClient.ts`**
+- **Deskripsi**: File ini menyediakan mekanisme klien TCP yang otomatis melakukan koneksi ulang ketika koneksi terputus. Service ini penting untuk menjaga stabilitas komunikasi antara server dan perangkat yang terhubung melalui protokol TCP.
+- **Penggunaan Utama**:
+  - Menyambungkan klien TCP dengan server.
+  - Menangani rekoneksi otomatis jika terjadi gangguan koneksi.
+
+### 3. **`DatabaseService.ts`**
+- **Deskripsi**: Service ini bertanggung jawab untuk mengelola operasi database. Ini mencakup pembacaan, penulisan, dan pembaruan data yang berkaitan dengan agen dan peta.
+- **Penggunaan Utama**:
+  - Mengambil data agen dari database.
+  - Menyimpan konfigurasi agen baru ke database.
+  - Mengupdate data agen yang sudah ada.
+  - Menyediakan antarmuka akses data bagi bagian lain dari aplikasi.
+
+### 4. **`DummyAgentsGenerator.ts`**
+- **Deskripsi**: File ini digunakan untuk keperluan pengembangan dan testing. Service ini menghasilkan data agen dummy (palsu) yang bisa digunakan selama proses pengujian aplikasi tanpa memerlukan agen fisik.
+- **Penggunaan Utama**:
+  - Membuat agen palsu (dummy) untuk keperluan pengujian.
+  - Menyediakan data kondisi agen dummy yang disimulasikan seperti pada agen nyata.
+
+### 5. **`MapProviderService.ts`**
+- **Deskripsi**: Service ini digunakan untuk menyediakan data peta yang digunakan oleh agen selama operasi. Ini mencakup peta yang diperoleh dari sistem SLAM (Simultaneous Localization and Mapping) atau sumber lain.
+- **Penggunaan Utama**:
+  - Menyimpan dan mengelola peta yang digunakan oleh agen.
+  - Menyediakan fungsionalitas untuk memperbarui peta dalam aplikasi.
+  - Menyediakan data peta yang disinkronkan dengan agen.
+
+### 6. **`WebSocketService.ts`**
+- **Deskripsi**: File ini mengelola komunikasi real-time antara server dan klien (misalnya, browser atau aplikasi lain) menggunakan WebSocket. Service ini penting untuk sinkronisasi data secara real-time, seperti pembaruan status agen yang segera dikirimkan ke klien.
+- **Penggunaan Utama**:
+  - Menginisialisasi koneksi WebSocket.
+  - Mengelola pengiriman dan penerimaan pesan real-time.
+  - Sinkronisasi data antara server dan klien, terutama untuk data agen dan peta.
+
+## Kesimpulan
+
+Folder `services` menyimpan berbagai service yang mengelola aspek penting dari aplikasi, mulai dari komunikasi dengan agen hingga pengelolaan peta dan database. Masing-masing file memiliki tanggung jawab spesifik dalam menjaga integritas dan kelancaran operasi aplikasi secara keseluruhan. Dengan adanya service ini, aplikasi dapat berjalan secara efisien dan mendukung kebutuhan komunikasi dan sinkronisasi data real-time yang krusial.

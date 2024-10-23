@@ -1,0 +1,51 @@
+---
+title: Agent Card
+description: Komponen ini digunakan untuk menampilkan detail agen, mengedit informasi agen, dan memeriksa status port agen. Terdapat navigasi untuk melihat status agen dan mengontrol agen.
+---
+
+## Fitur Utama
+1. **Menampilkan Detail Agen**: Menampilkan informasi dasar tentang agen seperti nama, situs, dan status.
+2. **Edit Agen**: Memungkinkan pengguna untuk mengedit nama, alamat IP, HSM Key, dan register plant agen melalui dialog.
+3. **Periksa Status Port**: Dialog untuk menampilkan status port agen menggunakan komponen `AgentPortStatus`.
+4. **Navigasi Status dan Kontrol**: Menyediakan navigasi menuju halaman status agen dan kontrol agen.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** dengan Composition API
+- **PrimeVue** untuk komponen UI seperti `Dialog`, `InputText`, dan `Button`.
+- **Vue Router** untuk navigasi melalui `RouterLink`.
+- **Custom Components** seperti `AgentStatus`, `AgentPortStatus`, `StatusIcon`, `EditIcon`, dan `MapAndControlIcon`.
+
+## Potongan Kode `AgentDetailCard.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { ref } from "vue";
+import { RouterLink } from "vue-router";
+import AgentStatus from "./AgentStatus.vue";
+import Dialog from "primevue/dialog";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import StatusIcon from "@/components/icon/StatusIcon.vue";
+import EditIcon from "@/components/icon/EditIcon.vue";
+import MapAndControlIcon from "@/components/icon/MapAndControlIcon.vue";
+import { Agent } from "@/types/agent";
+import AgentPortStatus from "./AgentPortStatus.vue"; // Import the AgentPortStatus component
+
+defineProps<{
+  agent: Agent;
+}>();
+
+// State untuk mengontrol visibilitas dialog
+const displayEditAgentDialog = ref(false); // Dialog edit agen
+const displayCheckPortStatus = ref(false); // Dialog cek status port
+
+// Fungsi untuk membuka/tutup dialog
+const toggleEditAgentDialog = () => {
+  displayEditAgentDialog.value = !displayEditAgentDialog.value;
+};
+const toggleCheckPortStatus = () => {
+  displayCheckPortStatus.value = !displayCheckPortStatus.value;
+};
+</script>

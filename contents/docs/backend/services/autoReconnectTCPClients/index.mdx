@@ -1,0 +1,25 @@
+---
+title: AutoReconnectTCPClient.ts Overview
+description: Penjelasan mengenai kelas AutoReconnectTCPClient yang digunakan untuk mengelola koneksi TCP yang otomatis mencoba terhubung kembali jika koneksi terputus.
+---
+
+## Overview `AutoReconnectTCPClient.ts`
+
+File `AutoReconnectTCPClient.ts` adalah sebuah kelas yang memperluas (extend) kelas `Socket` dari modul `net` di Node.js, yang digunakan untuk mengelola koneksi TCP. Fitur utama dari kelas ini adalah kemampuannya untuk mencoba menyambung ulang secara otomatis jika koneksi terputus.
+
+### Fitur Utama
+1. **Koneksi TCP Otomatis**: Kelas ini akan mencoba melakukan koneksi ke server TCP berdasarkan IP dan port yang ditentukan.
+2. **Koneksi Ulang Otomatis**: Jika koneksi gagal atau terputus, kelas ini akan terus mencoba menyambung ulang setiap 3 detik hingga koneksi berhasil.
+3. **Manajemen Koneksi**: Memantau status koneksi dengan event listeners seperti `connect`, `error`, dan `close`.
+
+### Fungsi Utama
+
+#### 1. **Konstruktor**
+```typescript
+constructor(serverIp: string, serverPort: number) {
+  super();
+  this.serverIp = serverIp;
+  this.serverPort = serverPort;
+  this.isConnected = false;
+  this.connectAndRetryIndefinitely();
+}

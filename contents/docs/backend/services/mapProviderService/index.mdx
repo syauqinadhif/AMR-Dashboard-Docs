@@ -1,0 +1,23 @@
+---
+title: MapProviderService.ts Overview
+description: Penjelasan mengenai layanan MapProvider yang bertanggung jawab untuk memuat dan mengonversi peta dari berbagai format dan menyediakan data peta untuk digunakan oleh agen.
+---
+
+## Overview `MapProviderService.ts`
+
+File `MapProviderService.ts` adalah service yang bertanggung jawab untuk memuat dan mengonversi peta dari berbagai format (seperti `.pgm` dan `.png`) serta menyediakan data peta untuk digunakan oleh agen dalam aplikasi.
+
+### Fitur Utama
+1. **Pemrosesan Peta**: Service ini memuat peta yang ada di dalam folder peta (`./maps/{mapName}`), memproses metadata dari file `.yaml`, dan mengonversi file peta dari format `.pgm` ke `.png` jika diperlukan.
+2. **Konversi Peta**: Mengonversi peta dari format `.pgm` ke `.png` untuk kompatibilitas yang lebih luas dan efisiensi pemrosesan.
+3. **Data Peta dalam Base64**: Setelah berhasil dimuat, data peta akan diubah menjadi format base64 sehingga dapat dengan mudah disimpan dan diakses.
+
+### Fungsi Utama
+
+#### 1. **Konstruktor**
+```typescript
+constructor(mapName: string) {
+  this.mapName = mapName;
+  this.isMapLoaded = false;
+  this.mapData = null;
+}

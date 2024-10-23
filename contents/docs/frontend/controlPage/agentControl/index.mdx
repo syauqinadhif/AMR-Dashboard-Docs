@@ -1,0 +1,63 @@
+---
+title: Agent Control
+description: Komponen ini digunakan untuk mengontrol pergerakan agen, mengirimkan koordinat target, dan mengelola kecepatan pergerakan agen. Juga menyediakan tindakan untuk memetakan seluruh ruangan dan menampilkan log terbaru.
+---
+
+## Fitur Utama
+1. **Kontrol Pergerakan Agen**: Pengguna dapat mengontrol arah gerakan agen menggunakan komponen `ControlPad`.
+2. **Kecepatan Pergerakan**: Pengguna dapat menyesuaikan kecepatan pergerakan agen menggunakan komponen `InputNumber`.
+3. **Navigasi ke Koordinat Target**: Pengguna dapat memasukkan koordinat target (format x,y) untuk mengarahkan agen ke lokasi tertentu.
+4. **Informasi Status Agen**: Menampilkan informasi status agen seperti posisi, orientasi, kecepatan linear, dan kecepatan angular.
+5. **Aksi Tambahan**: Tindakan tambahan untuk memetakan seluruh ruangan dan menampilkan log terbaru.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **PrimeVue** untuk komponen UI seperti `InputNumber`, `InputText`, dan `Button`.
+- **Socket.IO** untuk komunikasi real-time dengan backend.
+- **Tailwind CSS** untuk styling komponen.
+
+## Potongan Kode `AgentControlPanel.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useMainStore } from '@/stores/main'
+import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
+import Button from 'primevue/button'
+import RecentLogs from './RecentLogs.vue'
+import ControlPad from './ControlPad.vue'
+import { Position2D } from '@/types/agent'
+
+const props = defineProps<{
+  agent: string | null
+}>();
+defineEmits(['exit']); // Memicu event keluar dari panel
+
+const mainStore = useMainStore(); // Akses store utama
+
+// Variabel reaktif untuk menyimpan kecepatan gerak dan posisi target
+const movingSpeed = ref(2.5);
+const targetPosition = ref('');
+
+// Dapatkan data agen dari store berdasarkan nama agen
+const agentData = computed(() => {
+  return mainStore.agents.find((agent) => agent.name === props.agent) || null;
+});
+
+// Fungsi untuk mengontrol arah pergerakan agen
+function onControlDirection(direction: string) {
+  mainStore.socket?.emit('agentCmd:direction', agentData.value?.id, direction);
+}
+
+// Fungsi untuk mengarahkan agen ke posisi target
+function onNavigate() {
+  if (targetPosition.value.match(/,/g)?.length !== 1) return; // Validasi format x,y
+
+  const position: Position2D = targetPosition.value.split(',').map((coord) => parseFloat(coord)) as Position2D;
+  mainStore.socket?.emit('agentCmd:targetPosition', agentData.value?.id, position);
+  targetPosition.value = ''; // Reset posisi target
+}
+</script>

@@ -1,0 +1,30 @@
+---
+title: WebSocketService.ts Overview
+description: Penjelasan mengenai layanan WebSocket yang digunakan untuk mengelola komunikasi real-time antara server dan klien melalui protokol WebSocket.
+---
+
+## Overview `WebSocketService.ts`
+
+`WebSocketService.ts` adalah kelas yang mengelola komunikasi real-time antara server dan klien menggunakan **Socket.IO**. Kelas ini bertanggung jawab untuk menerima koneksi klien baru, memancarkan event untuk setiap koneksi baru, dan mendengarkan disconnect klien.
+
+### Fitur Utama
+1. **Menerima Koneksi Klien**: Mengelola koneksi klien baru melalui WebSocket dan memancarkan event `clientConnection` setiap kali ada klien baru yang terhubung.
+2. **Event-driven**: Berbasis event menggunakan `EventEmitter` untuk menangani berbagai interaksi antara server dan klien.
+3. **CORS Configuration**: Mengatur Cross-Origin Resource Sharing (CORS) untuk mengizinkan permintaan dari berbagai origin.
+
+### Fungsi Utama
+
+#### 1. **Konstruktor**
+```typescript
+constructor(httpServer: Server) {
+  this.socketServerOpts = {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST']
+    }
+  };
+  this.io = new SocketServer(httpServer, this.socketServerOpts);
+  this.eventEmitter = new EventEmitter();
+
+  this.io.on('connection', this.handleClientConnection.bind(this));
+}

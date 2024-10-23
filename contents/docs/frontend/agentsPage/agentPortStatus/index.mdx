@@ -1,0 +1,38 @@
+---
+title: Agent Port Status
+description: Komponen ini digunakan untuk menampilkan status koneksi port dari agen. Setiap port akan menampilkan status apakah terhubung atau tidak dengan indikasi teks dan warna.
+---
+
+## Fitur Utama
+1. **Menampilkan Status Port**: Setiap port akan ditampilkan dengan status apakah terhubung atau tidak.
+2. **Indikator Visual**: Status port ditampilkan dengan indikator warna: hijau untuk terhubung dan merah untuk tidak terhubung.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Tailwind CSS** untuk styling warna dan layout.
+
+## Potongan Kode `AgentPortStatus.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+defineProps({
+  portStatus: {
+    type: Object,
+    required: true
+  }
+});
+
+// Define the status object to map status to text and color
+const statusObject = {
+  true: {
+    text: 'Connected',
+    color: 'text-green-500'
+  },
+  false: {
+    text: 'Not Connected',
+    color: 'text-red-500'
+  }
+};
+</script>

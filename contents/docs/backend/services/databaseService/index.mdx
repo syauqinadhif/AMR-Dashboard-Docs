@@ -1,0 +1,29 @@
+---
+title: DatabaseService.ts Overview
+description: Penjelasan mengenai layanan database MySQL yang digunakan untuk mengelola data agen di aplikasi.
+---
+
+## Overview `DatabaseService.ts`
+
+`DatabaseService.ts` adalah sebuah kelas yang menyediakan fungsionalitas untuk berinteraksi dengan database MySQL. Kelas ini memungkinkan pengambilan data agen dari database serta penambahan agen baru ke dalam database. Koneksi ke database dikelola menggunakan connection pool yang diatur oleh variabel lingkungan.
+
+### Fitur Utama
+1. **Koneksi ke Database**: Menggunakan pool koneksi ke database MySQL dengan konfigurasi yang diambil dari variabel lingkungan (disimpan di `.env`).
+2. **Mengambil Data Agen**: Kelas ini menyediakan fungsi untuk mengambil daftar agen dari tabel `agents` di database.
+3. **Menambah Agen Baru**: Fungsi lain dari kelas ini adalah menambahkan agen baru ke dalam database melalui query SQL `INSERT`.
+4. **Penutupan Pool**: Kelas ini juga menyediakan metode untuk menutup pool koneksi ke database saat tidak lagi digunakan.
+
+### Fungsi Utama
+
+#### 1. **Konstruktor**
+```typescript
+constructor() {
+  this.pool = mysql.createPool({
+    host: process.env.DB_HOST, 
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD, 
+    database: process.env.DB_NAME,
+    connectionLimit: 10,
+    queueLimit: 0,
+  });
+}

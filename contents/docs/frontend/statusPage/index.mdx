@@ -1,0 +1,60 @@
+---
+title: Status Page
+description: Halaman Status digunakan untuk menampilkan daftar agen dengan opsi pencarian dan filter status. Pengguna dapat memfilter agen berdasarkan status (active, idle) dan mencari agen berdasarkan nama. Setiap agen yang ditampilkan memiliki rincian status yang ditampilkan menggunakan `AgentStatusCard.vue`.
+---
+
+## Fitur Utama
+1. **Pencarian Agen**: Pengguna dapat mencari agen berdasarkan nama menggunakan komponen `AgentSearchFilter`.
+2. **Filter Status Agen**: Pengguna dapat memfilter agen berdasarkan status mereka, seperti `active` atau `idle`, menggunakan komponen `SelectButton`.
+3. **Tampilan Kartu Agen**: Hasil pencarian dan filter ditampilkan dalam bentuk kartu menggunakan `AgentStatusCard`, yang merinci status baterai, kecepatan linear dan angular, serta kekuatan sinyal agen.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **PrimeVue** untuk komponen UI seperti `SelectButton`.
+- **Vuex** untuk manajemen state global, termasuk data agen.
+- **AgentStatusCard.vue** untuk menampilkan informasi status setiap agen.
+
+## Penjelasan Rincian Status Agen
+
+Pada halaman Status View, setiap agen yang telah difilter akan ditampilkan menggunakan komponen `AgentStatusCard.vue`. Komponen ini bertanggung jawab untuk menampilkan informasi penting tentang masing-masing agen, seperti:
+
+1. **Status Baterai**: Menampilkan persentase baterai agen dalam bentuk progress circular. Jika persentase baterai berada di bawah 20%, indikator akan berubah warna menjadi merah.
+2. **Kecepatan Linear dan Angular**: Menampilkan kecepatan linear dalam meter per detik (m/s) dan kecepatan angular dalam radian per detik (rad/s).
+3. **Kekuatan Sinyal**: Menampilkan ikon sinyal untuk menunjukkan kekuatan sinyal agen.
+4. **Siklus Pemeliharaan**: Informasi tentang siklus pemeliharaan agen dalam hitungan jam (contoh: 12 jam).
+
+Rincian ini memungkinkan pengguna untuk memantau kondisi setiap agen secara detail, seperti memeriksa status baterai, memantau kecepatan pergerakan agen, dan melihat sinyal jaringan yang digunakan oleh agen.
+
+## Potongan Kode `StatusView.vue`
+
+### Script Section
+```typescript
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useMainStore } from "@/stores/main";
+import SelectButton from "primevue/selectbutton";
+import UserLayout from "@/components/UserLayout.vue";
+import AgentSearchFilter from "@/components/AgentSearchFilter.vue";
+import AgentStatusCard from "@/components/pages/Status/AgentStatusCard.vue";
+
+// Opsi filter untuk status agen
+const filterOptions = [
+  { label: "Active", value: "active" },
+  { label: "Idle", value: "idle" },
+];
+
+const mainStore = useMainStore();
+const searchValue = ref(""); // Nilai pencarian untuk nama agen
+const selectedTag = ref(null); // Status agen yang dipilih
+
+// Properti terkomputasi untuk memfilter agen berdasarkan nama dan status
+const filteredAgents = computed(() => {
+  return mainStore.agents.filter((agent) => {
+    const matchesSearch = agent.name
+      .toLowerCase()
+      .includes(searchValue.value.toLowerCase());
+    const matchesTag = selectedTag.value === null || selectedTag.value === agent.status;
+    return matchesSearch && matchesTag;
+  });
+});
+</script>

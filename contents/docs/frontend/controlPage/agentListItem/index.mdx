@@ -1,0 +1,32 @@
+---
+title: Agent List Item
+description: Komponen ini menampilkan satu item agen dalam daftar, memungkinkan interaksi jika agen tersedia (bukan offline). Jika agen dalam status `offline`, komponen tidak akan bisa diklik dan akan muncul dengan gaya nonaktif (grayed out).
+---
+
+## Fitur Utama
+1. **Menampilkan Nama Agen**: Menampilkan nama agen yang diterima dari props.
+2. **Status Interaktif**: Jika agen `online`, komponen dapat diklik untuk memilih agen, dan memicu event `click`.
+3. **Status Nonaktif**: Jika agen berstatus `offline`, tampilannya akan berubah menjadi abu-abu, dan komponen tidak dapat diklik.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Tailwind CSS** untuk styling komponen interaktif dan nonaktif.
+
+## Potongan Kode `AgentListItem.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { computed } from 'vue';
+import { Agent } from '@/types/agent';
+
+// Mengambil properti agen dari parent
+const props = defineProps<{
+  agent: Agent
+}>();
+defineEmits(['click']) // Menerbitkan event ketika agen diklik
+
+// Komputasi untuk memeriksa apakah agen offline
+const isOffline = computed(() => !props.agent.status || props.agent.status === 'offline');
+</script>

@@ -1,0 +1,80 @@
+---
+title: Recent Logs Component
+description: Komponen ini menampilkan log terbaru dengan waktu dan tingkat keparahan (severity). Pengguna dapat melihat pesan log dan mengidentifikasi tingkat keparahan berdasarkan ikon berwarna.
+---
+
+## Fitur Utama
+1. **Menampilkan Log Terbaru**: Daftar log dengan pesan, waktu, dan tingkat keparahan ditampilkan dengan rapi.
+2. **Indikator Keparahan**: Setiap log memiliki indikator warna untuk tingkat keparahan: biru untuk `info`, kuning untuk `warning`, dan merah untuk `error`.
+3. **Format Waktu**: Waktu setiap log ditampilkan dalam format 24 jam dengan jam, menit, dan detik.
+4. **Tombol Filter**: Tombol filter disediakan untuk aksi lebih lanjut (meskipun belum terimplementasi).
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **PrimeVue** untuk komponen tombol (`Button`).
+- **Tailwind CSS** untuk styling.
+
+## Potongan Kode `RecentLogs.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from 'primevue/button'
+
+// Definisi tipe untuk struktur log
+interface Log {
+  timestamp: number
+  message: string
+  severity: 'info' | 'warning' | 'error'
+}
+
+// Data log terbaru (hard-coded untuk sekarang)
+const recentLogs = ref<Log[]>([
+  {
+    timestamp: new Date('2024-08-28 13:05:12').getTime(),
+    message: 'Obstacle: Block on the way',
+    severity: 'info'
+  },
+  {
+    timestamp: new Date('2024-08-28 13:04:12').getTime(),
+    message: 'Obstacle: Block on the way',
+    severity: 'info'
+  },
+  {
+    timestamp: new Date('2024-08-28 12:58:38').getTime(),
+    message: 'Battery low: 10%',
+    severity: 'warning'
+  },
+  {
+    timestamp: new Date('2024-08-28 12:54:12').getTime(),
+    message: 'Obstacle: Block on the way',
+    severity: 'info'
+  },
+  {
+    timestamp: new Date('2024-08-28 12:42:58').getTime(),
+    message: 'Battery low: 20%',
+    severity: 'warning'
+  },
+  {
+    timestamp: new Date('2024-08-28 08:02:45').getTime(),
+    message: 'LED malfunctioned',
+    severity: 'error'
+  },
+])
+
+// Warna untuk setiap tingkat keparahan
+const severityColors = {
+  info: 'text-blue-500',
+  warning: 'text-yellow-500',
+  error: 'text-red-500'
+}
+
+// Format waktu menjadi jam:menit:detik
+function formatTime(timestamp: number): string {
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  const date = new Date(timestamp)
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+}
+</script>

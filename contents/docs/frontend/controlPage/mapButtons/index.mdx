@@ -1,0 +1,35 @@
+---
+title: Action Buttons Component
+description: Komponen ini menampilkan serangkaian tombol yang melakukan tindakan tertentu ketika diklik. Setiap tombol memiliki teks dan dapat diberi aksi terkait.
+---
+
+## Fitur Utama
+1. **Daftar Tombol**: Menampilkan daftar tombol aksi yang dapat diklik, masing-masing dengan teks dan fungsi terkait.
+2. **Aksi Dinamis**: Setiap tombol dikaitkan dengan sebuah fungsi yang dipanggil ketika tombol diklik, yang dapat dengan mudah disesuaikan.
+
+## Teknologi yang Digunakan
+- **Vue.js 3** (Composition API)
+- **Tailwind CSS** atau CSS utilitas lainnya untuk styling tombol dengan respons interaktif (hover, shadow).
+
+## Potongan Kode `ActionButtons.vue`
+
+### Script Section
+
+```typescript
+<script setup lang="ts">
+import { reactive } from 'vue';
+
+// Daftar tombol dengan teks dan aksi yang terkait
+const buttons = reactive([
+  {
+    text: 'Follow',
+    icon: '', // Placeholder untuk ikon jika diperlukan
+    action: () => console.log('Follow agent')
+  },
+  {
+    text: 'Cloud',
+    icon: '', // Placeholder untuk ikon jika diperlukan
+    action: () => console.log('Toggle point cloud')
+  }
+]);
+</script>
